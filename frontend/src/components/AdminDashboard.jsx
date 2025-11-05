@@ -1,74 +1,95 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-function Login({ onLogin }) {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+function AdminDashboard({ user, onLogout }) {
+  const [leaves, setLeaves] = useState([]);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError('');
-    setLoading(true);
+  useEffect(() => {
+    fetchLeaves();
+  }, []);
 
+  const fetchLeaves = async () => {
     try {
-      const response = await axios.post('/auth/login', { email, password });
-      onLogin(response.data.token, response.data.user);
+      const response = await axios.get('/leaves');
+      setLeaves(response.data);
     } catch (err) {
-      setError(err.response?.data?.error || 'Login failed');
+      setError('Failed to fetch leave requests');
+    }
+  };
+
+  const handleStatusUpdate = async (leaveId, status) => {
+    setLoading(true);
+    try {
+      await axios.patch(`/leaves/${leaveId}/status`, { status });
+      fetchLeaves();
+    } catch (err) {
+      setError('Failed to update leave status');
     } finally {
       setLoading(false);
     }
   };
 
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'approved': return 'status-approved';
+      case 'rejected': return 'status-rejected';
+      default: return 'status-pending';
+    }
+  };
+
   return (
-    <div className="auth-container">
-      <div className="auth-card">
-        <h2>Login to Leave Management</h2>
+    <div className="dashboard-container">
+      <header className="dashboard-header">
+        <h1>Admin Dashboard - {user.name}</h1>
+        <button onClick={onLogout} className="logout-btn">Logout</button>
+      </header>
+
+      <div className="dashboard-content">
         {error && <div className="error-message">{error}</div>}
-        
-        <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label>Email</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              placeholder="your@email.com"
-            />
-          </div>
-          
-          <div className="form-group">
-            <label>Password</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              placeholder="Enter password"
-            />
-          </div>
-          
-          <button type="submit" disabled={loading}>
-            {loading ? 'Logging in...' : 'Login'}
-          </button>
-        </form>
-        
-        <p className="auth-link">
-          Don't have an account? <Link to="/register">Register here</Link>
-        </p>
-        
-        <div className="demo-credentials">
-          <p><strong>Demo Credentials:</strong></p>
-          <p>Admin: admin@company.com / admin123</p>
-          <p>Employee: john@company.com / employee123</p>
+
+        <div className="leaves-section">
+          <h3>All Leave Requests</h3>
+          {leaves.length === 0 ? (
+            <p>No leave requests found.</p>
+          ) : (
+            <div className="leaves-list">
+              {leaves.map(leave => (
+                <div key={leave.id} className="leave-card">
+                  <div className="leave-info">
+                    <p><strong>Employee:</strong> {leave.employee_name}</p>
+                    <p><strong>Dates:</strong> {leave.start_date} to {leave.end_date}</p>
+                    <p><strong>Reason:</strong> {leave.reason}</p>
+                    <p><strong>Status:</strong> <span className={getStatusColor(leave.status)}>{leave.status}</span></p>
+                    <p><strong>Requested:</strong> {new Date(leave.created_at).toLocaleDateString()}</p>
+                  </div>
+                  {leave.status === 'pending' && (
+                    <div className="leave-actions">
+                      <button
+                        onClick={() => handleStatusUpdate(leave.id, 'approved')}
+                        disabled={loading}
+                        className="btn-approve"
+                      >
+                        Approve
+                      </button>
+                      <button
+                        onClick={() => handleStatusUpdate(leave.id, 'rejected')}
+                        disabled={loading}
+                        className="btn-reject"
+                      >
+                        Reject
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>
   );
 }
 
-export default Login;
+export default AdminDashboard;
