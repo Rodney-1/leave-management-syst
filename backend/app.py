@@ -191,3 +191,36 @@ def update_leave_status(leave_id):
 @app.route('/health', methods=['GET'])
 def health_check():
     return jsonify({'status': 'healthy'}), 200
+# Initialize database and create admin user
+def init_db():
+    with app.app_context():
+        db.create_all()
+        
+        # Create default admin if not exists
+        admin = User.query.filter_by(email='admin@company.com').first()
+        if not admin:
+            admin = User(
+                name='Admin User',
+                email='admin@company.com',
+                password=generate_password_hash('admin123'),
+                role='admin'
+            )
+            db.session.add(admin)
+        
+        # Create default employee if not exists
+        employee = User.query.filter_by(email='john@company.com').first()
+        if not employee:
+            employee = User(
+                name='John Doe',
+                email='john@company.com',
+                password=generate_password_hash('employee123'),
+                role='employee'
+            )
+            db.session.add(employee)
+        
+        db.session.commit()
+        print("Database initialized successfully!")
+
+if __name__ == '__main__':
+    init_db()
+    app.run(debug=True, port=5000)
