@@ -1,6 +1,6 @@
 # Leave Management System
 
-A full-stack web application for managing employee leave requests. Built with Flask (backend) and React (frontend).
+A sipmle full-stack web application for managing employee leave requests.
 
 ## Features
 
@@ -10,11 +10,11 @@ A full-stack web application for managing employee leave requests. Built with Fl
 - **Admin Approval**: Admins can approve or reject leave requests
 - **Real-time Updates**: Dashboard updates after actions
 
-## Tech Stack
 
-- **Backend**: Flask, SQLAlchemy, Flask-JWT-Extended, Flask-CORS
-- **Frontend**: React, React Router, Axios, Vite
-- **Database**: SQLite
+## Live Demo
+
+- **Frontend**: https://leavesyst.netlify.app/
+- **Backend API**: https://leave-management-syst.onrender.com/
 
 ## Demo Credentials
 
@@ -25,9 +25,9 @@ A full-stack web application for managing employee leave requests. Built with Fl
 
 ### Prerequisites
 
-- Python 3.8+
-- Node.js 16+
-- npm or yarn
+- Python 3.8
+- Node.js 22
+- npm
 
 ### Backend Setup
 
@@ -39,12 +39,14 @@ A full-stack web application for managing employee leave requests. Built with Fl
 2. Create a virtual environment:
    ```bash
    python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   source venv/bin/activate
    ```
 
 3. Install dependencies:
    ```bash
-   pip install -r requirements.txt
+   pip install Flask Flask_SQLAlchemy Flask-Cors Flask-JWT-Extended SQLAchemy
+      #then 
+   pip freeze > requirements.txt
    ```
 
 4. Run the backend server:
@@ -65,7 +67,12 @@ A full-stack web application for managing employee leave requests. Built with Fl
    npm install
    ```
 
-3. Start the development server:
+3. Run the build first:
+   ```bash
+   npm run build
+   ```
+
+4. Start the development server:
    ```bash
    npm run dev
    ```
@@ -78,10 +85,3 @@ A full-stack web application for managing employee leave requests. Built with Fl
 3. As an employee: Submit leave requests and view your request history
 4. As an admin: View all leave requests and approve/reject them
 
-## API Endpoints
-
-- `POST /auth/register` - Register new user
-- `POST /auth/login` - User login
-- `GET /leaves` - Get leave requests (filtered by role)
-- `POST /leaves` - Create new leave request
-- `PATCH /leaves/<id>/status` - Update leave status (admin only)
