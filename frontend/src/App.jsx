@@ -8,7 +8,7 @@ import AdminDashboard from './components/AdminDashboard';
 import './App.css';
 
 // Configure axios defaults
-axios.defaults.baseURL = 'http://localhost:5000';
+axios.defaults.baseURL = 'https://leave-management-syst.onrender.com/';
 
 function App() {
   const [user, setUser] = useState(null);
