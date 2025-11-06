@@ -14,7 +14,8 @@ function Login({ onLogin }) {
     setLoading(true);
 
     try {
-      const response = await axios.post('/auth/login', { email, password });
+      const response = await axios.post('https://leave-management-syst.onrender.com/auth/login', { email, password });
+
       onLogin(response.data.token, response.data.user);
     } catch (err) {
       setError(err.response?.data?.error || 'Login failed');

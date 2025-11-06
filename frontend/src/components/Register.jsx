@@ -22,7 +22,7 @@ function Register() {
     setLoading(true);
 
     try {
-      await axios.post('/auth/register', formData);
+      await axios.post('https://leave-management-syst.onrender.com/auth/register', formData);
       alert('Registration successful! Please login.');
       navigate('/login');
     } catch (err) {
